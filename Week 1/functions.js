@@ -2,11 +2,9 @@
 //  This code is inspired by Erno's code shared on version.lab.fi
 
 if(document.readyState !== "loading") {
-    console.log("Document is ready!");
     initializeCode();
 } else {
     document.addEventListener("DOMContentLoaded", function() {
-        console.log("Document is ready after waiting!");
         initializeCode();
     })
 }
@@ -19,7 +17,7 @@ function initializeCode() {
     const newText = document.getElementById("new-text");
 
     myButton.addEventListener("click", function() {
-        console.log("Hello world");
+        console.log("hello world");
         myHeader.innerHTML = "Moi maailma"
     })
 
