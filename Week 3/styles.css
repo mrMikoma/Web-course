@@ -1,0 +1,49 @@
+body {
+    font-family: Verdana, Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    font-size: 16px;
+    text-align: left;
+    table-layout: fixed;
+    width: 100%;
+}
+
+th {
+    background-color: rgb(183, 208, 255);
+    padding: 12px 0px 12px 6px;
+    font-family: bold;
+    border-bottom: 2px solid gray;
+}
+
+td {
+    padding: 6px;
+    border-bottom: 1px solid grey;
+}
+
+.even-datarow {
+    background-color: #f2f2f2;
+}
+
+.odd-datarow {
+    background-color: #ffffff;
+}
+
+.over45-datarow {
+    background-color: #abffbd;
+}
+
+.under25-datarow {
+    background-color: #ff9e9e;
+}
+
+.center {
+    margin: auto;
+    padding: 60px;
+    width: 60%;
+}
