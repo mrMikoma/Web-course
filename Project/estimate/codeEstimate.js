@@ -79,6 +79,11 @@ const buildChart = async () => {
     values: consumption,
     chartType: "bar",
   });
+  chartDataDayahead.datasets.push({
+    name: "Consumption (kW/h)",
+    values: consumption,
+    chartType: "bar",
+  });
 
   console.log(chartDataToday); // Debug
 
@@ -125,7 +130,7 @@ const updateChart = () => {
   tempChartData.datasets[0].values = values;
 
   // Update chart
-  chart.update(tempChartData);
+  updateConsumptionChart(event);
 };
 
 const consumptionRanges = document.getElementById("range-wrapper");
@@ -144,10 +149,25 @@ const updateConsumptionChart = (event) => {
   // Set new values
   let values = tempChartData.datasets[1].values;
   values[elem.id] = elem.value;
-  tempChartData.datasets[1].values = values;
+
+  // Update both datasets
+  chartDataToday.datasets[1].values = values;
+  chartDataDayahead.datasets[1].values = values;
 
   // Update chart
   chart.update(tempChartData);
+
+  // Calculate electricity consumption price
+  let totalPrice = 0;
+  let prices = tempChartData.datasets[0].values;
+  let consumptions = tempChartData.datasets[1].values;
+  prices.forEach((value, index) => {
+    totalPrice += Number(((value * consumptions[index]) / 100).toFixed(2));
+  });
+
+  // Update consumption price
+  let consumptionLable = document.getElementById("consumption-price");
+  consumptionLable.innerText = totalPrice + "€";
 };
 
 buildChart();
