@@ -1,0 +1,22 @@
+header {
+    padding: 10px;
+    margin: auto,
+}
+
+body {
+    padding: 100;
+    margin: auto,
+}
+
+footer {
+    padding: 10px;
+    margin: auto,
+}
+
+.alpha { color: purple; }
+
+
+.beta {
+  color: yellow;
+  background-color: indigo;
+}

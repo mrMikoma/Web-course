@@ -58,6 +58,8 @@ const buildChart = async () => {
     };
   });
 
+  console.log(regions)  // Debug
+
   // Configure chart
   const chartData = {
     labels: labels,
