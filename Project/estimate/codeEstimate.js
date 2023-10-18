@@ -46,7 +46,9 @@ const getDataset = (data) => {
     // Fix price
     values.push((Number(price.price) / 10).toFixed(2));
   });
-  let dataset = [{ name: "Hour price (cents/kWh)", values: values }];
+  let dataset = [
+    { name: "Hour price (cents/kWh)", values: values, chartType: "line" },
+  ];
 
   chartData = {
     labels: labels,
@@ -58,8 +60,8 @@ const getDataset = (data) => {
 
 const buildChart = async () => {
   // Get data
-  const sourceToday = "day-prices.json";
-  const sourceDayahead = "day-prices-dayahead.json";
+  const sourceToday = "../day-prices.json";
+  const sourceDayahead = "../day-prices-dayahead.json";
   const dataToday = await getData(sourceToday);
   const dataDayahead = await getData(sourceDayahead);
 
@@ -67,13 +69,26 @@ const buildChart = async () => {
   chartDataToday = getDataset(dataToday);
   chartDataDayahead = getDataset(dataDayahead);
 
+  // Add estimate dataset
+  let consumption = [];
+  for (let i = 0; i < 24; i++) {
+    consumption.push("0");
+  }
+  chartDataToday.datasets.push({
+    name: "Consumption (kW/h)",
+    values: consumption,
+    chartType: "bar",
+  });
+
+  console.log(chartDataToday); // Debug
+
   // Configure chart
   chart = new frappe.Chart("#chart", {
     data: chartDataToday,
     title: "Electricity prices",
     type: "line",
     height: 450,
-    colors: ['red'],
+    colors: ["red", "blue"],
     axisOptions: {
       xIsSeries: true,
       xAxisMode: "tick",
@@ -84,10 +99,12 @@ const buildChart = async () => {
       heatline: 1,
       regionFill: 1,
     },
+    barOptions: {},
   });
 };
 
 const updateChart = () => {
+  // ELECTRICITY PRICES
   // Select data day
   let tempChartData = structuredClone(chartDataToday);
   if (daySelector2.checked) {
@@ -106,6 +123,28 @@ const updateChart = () => {
     values[index] = (Number(value) * indexVAT).toFixed(2);
   });
   tempChartData.datasets[0].values = values;
+
+  // Update chart
+  chart.update(tempChartData);
+};
+
+const consumptionRanges = document.getElementById("range-wrapper");
+consumptionRanges.addEventListener("change", (event) => {
+  updateConsumptionChart(event);
+});
+
+const updateConsumptionChart = (event) => {
+  // Select data day
+  let tempChartData = chartDataToday;
+  if (daySelector2.checked) {
+    tempChartData = chartDataDayahead;
+  }
+  let elem = event.target;
+
+  // Set new values
+  let values = tempChartData.datasets[1].values;
+  values[elem.id] = elem.value;
+  tempChartData.datasets[1].values = values;
 
   // Update chart
   chart.update(tempChartData);
