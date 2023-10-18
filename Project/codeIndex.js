@@ -1,6 +1,7 @@
 /* 
 Used documentation:
 - https://frappe.io/charts/docs
+- https://getbootstrap.com/docs/5.2/getting-started/introduction/
 
 */
 
@@ -25,13 +26,8 @@ daySelector2.addEventListener("click", (event) => {
 // Add checkbox
 const includeVATbox = document.getElementById("vat-box");
 includeVATbox.addEventListener("click", (event) => {
-  //event.preventDefault();
-});
-
-// Add update data button
-const updateButton = document.getElementById("update-data");
-updateButton.addEventListener("click", () => {
-  buildChart();
+  console.log("VAT checked!"); // Debug
+  updateChart();
 });
 
 /*
@@ -58,15 +54,11 @@ const getDataset = (data) => {
       isoDate.getHours().toString() + ":" + isoDate.getMinutes().toString() + 0;
     labels.push(time);
 
-    // Parse price
-    if (includeVATbox.checked) {
-      console.log("hahaa");
-      values.push((Number(price.price) * 1.24).toFixed(2));
-    } else {
-      values.push((Number(price.price) / 10).toFixed(2));
-    }
+    // Fix price
+    values.push((Number(price.price) / 10).toFixed(2));
+
   });
-  let dataset = [{ name: "asd", values: values }];
+  let dataset = [{ name: "Hour price", values: values }];
 
   chartData = {
     labels: labels,
@@ -97,12 +89,28 @@ const buildChart = async () => {
   });
 };
 
-const updateChart = async () => {
+const updateChart = () => {
+  // Select data day
+  let tempChartData = structuredClone(chartDataToday);
   if (daySelector2.checked) {
-    chart.update(chartDataDayahead);
-  } else {
-    chart.update(chartDataToday);
+    tempChartData = structuredClone(chartDataDayahead);;
   }
+
+  // Select VAT
+  let indexVAT = 1;
+  if (includeVATbox.checked) {
+    indexVAT = 1.24;
+  }
+
+  // Calculate new values
+  let values = tempChartData.datasets[0].values;
+  values.forEach((value, index) => {
+    values[index] = ((Number(value) * indexVAT).toFixed(2));
+  })
+  tempChartData.datasets[0].values = values;
+
+  // Update chart
+  chart.update(tempChartData);
 };
 
 buildChart();
