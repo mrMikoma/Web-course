@@ -8,6 +8,7 @@ Used documentation:
 let chart = "";
 let chartDataToday = "";
 let chartDataDayahead = "";
+let runningListID = 0;
 
 // Add dayselector 1
 const daySelector1 = document.getElementById("btnradio1");
@@ -31,6 +32,17 @@ includeVATbox.addEventListener("click", (event) => {
 const addActionButton = document.getElementById("add-action");
 addActionButton.addEventListener("click", (event) => {
   updateConsumptionChart();
+});
+
+// Add wrapper for removing action from list
+const wrapperActions = document.getElementById("action-list");
+wrapperActions.addEventListener("click", (event) => {
+  const isButton = event.target.nodeName === "BUTTON";
+  if (!isButton) {
+    return;
+  }
+
+  console.log("haha: " + event.target.id);
 });
 
 const getData = async (source) => {
@@ -151,9 +163,6 @@ const updateConsumptionChart = () => {
   let startTime = document.getElementById("startTime").value;
   let endTime = document.getElementById("endTime").value;
 
-  console.log(startTime); // dEBUG
-  console.log(endTime); // dEBUG
-
   // Parse time
   let startTimeDate = new Date("2019-01-01T" + startTime + ":00.000+00:00");
   let endTimeDate = new Date("2019-01-01T" + endTime + ":00.000+00:00");
@@ -161,6 +170,59 @@ const updateConsumptionChart = () => {
     console.log("Not possible!");
     return;
   }
+
+  // Calculate new values
+  calculateConsumptionPrices(tempChartData, action, startTimeDate, endTimeDate);
+
+  // Add new item to list
+  let div = document.createElement("div");
+  let node = document.createElement("li");
+  let button = document.createElement("button");
+  node.appendChild(
+    document.createTextNode(
+      action[action[action.selectedIndex].id].textContent +
+        " " +
+        startTime +
+        "-" +
+        endTime
+    )
+  );
+  div.className = "list-group-item d-flex justify-content-around";
+  button.id = runningListID;
+  ++runningListID;
+  button.className = "btn btn-outline-danger";
+  button.textContent = "Remove";
+
+  div.append(node);
+  div.append(button);
+  document.getElementById("action-list").appendChild(div);
+
+  // Update chart
+  chart.update(tempChartData);
+
+  // Calculate electricity consumption price
+  let totalPrice = calculateTotalPrice();
+
+  // Update consumption price
+  let consumptionLable = document.getElementById("consumption-price");
+  consumptionLable.innerText = totalPrice + "€";
+};
+
+const calculateTotalPrice = () => {
+  let prices = tempChartData.datasets[0].values;
+  let consumptions = tempChartData.datasets[1].values;
+  prices.forEach((value, index) => {
+    totalPrice += Number(((value * consumptions[index]) / 100).toFixed(2));
+  });
+  return totalPrice;
+};
+
+const calculateConsumptionPrices = (
+  tempChartData,
+  action,
+  startTimeDate,
+  endTimeDate
+) => {
 
   // Calculate start minutes
   if (startTimeDate.getMinutes() != 0) {
@@ -185,7 +247,7 @@ const updateConsumptionChart = () => {
 
     // Calculate hour cost
     console.log("Alkava tunti: " + (startTimeDate.getHours() - 2));
-    newConsumptionPrices[startTimeDate.getHours() - 3] = 5;
+    newConsumptionPrices[startTimeDate.getHours() - 3] = 5; // FIX!!!!
 
     // Iterate
     startTimeDate.setHours(startTimeDate.getHours() + 1);
@@ -217,39 +279,6 @@ const updateConsumptionChart = () => {
   chartDataToday.datasets[1].values = oldConsumption;
   chartDataDayahead.datasets[1].values = oldConsumption;
   console.log(tempChartData.datasets[1].values); // Debug
-
-  // Add new item to list
-  let node = document.createElement("li");
-  node.appendChild(
-    document.createTextNode(
-      action[action[action.selectedIndex].id].textContent +
-        " " +
-        startTime +
-        "-" +
-        endTime
-    )
-  );
-  node.className = "list-group-item";
-
-  document.getElementById("action-list").appendChild(node);
-
-  console.log("LOL: " + newConsumptionPrices); // dEBUG
-
-  // Update chart
-  chart.update(tempChartData);
-  
-  // Calculate electricity consumption price
-  let totalPrice = 0;
-  let prices = tempChartData.datasets[0].values;
-  let consumptions = tempChartData.datasets[1].values;
-  prices.forEach((value, index) => {
-    totalPrice += Number(((value * consumptions[index]) / 100).toFixed(2));
-  });
-
-  // Update consumption price
-  let consumptionLable = document.getElementById("consumption-price");
-  consumptionLable.innerText = totalPrice + "€";
-  
 };
 
 buildChart();
