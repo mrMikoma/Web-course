@@ -68,86 +68,104 @@
         <label id="consumption-price" class="fw-bold">0€</label>
       </div>
     </div>
-    <div>
+    <div class="p-1 m-2 border border-success border-1">
       <div id="chart"></div>
     </div>
     <div>
-      <ul id="action-list" class="list-group">
-      </ul>
+      <ul id="action-list" class="list-group"></ul>
     </div>
-    <div class="row gy-2 gx-3 align-items-center">
-      <div
-        class="btn-group"
-        role="group"
-        aria-label="Basic radio toggle button group"
-      >
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio1"
-          autocomplete="off"
-          checked
-        />
-        <label class="btn btn-outline-primary" for="btnradio1">Today</label>
-
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio2"
-          autocomplete="off"
-        />
-        <label class="btn btn-outline-primary" for="btnradio2">Day ahead</label>
-      </div>
-      <div class="col-auto">
-        <div class="form-check">
-          <input type="checkbox" id="vat-box" class="form-check-input" />
-          <label class="form-check-label" for="vat-box"
-            >Include VAT (24%)</label
-          >
+    <div class="d-flex justify-content-center" id="settings">
+      <span class="border border-secondary border-1">
+        <div class="d-flex justify-content-center bg-light">
+          <span class="p-2 m-2 border border-secondary border-1">
+            <div class="btn-group" role="group">
+              <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnradio1"
+                autocomplete="off"
+                checked
+              />
+              <label class="btn btn-outline-primary" for="btnradio1"
+                >Today</label
+              >
+              <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnradio2"
+                autocomplete="off"
+              />
+              <label class="btn btn-outline-primary" for="btnradio2"
+                >Day ahead</label
+              >
+            </div>
+            <div class="col-auto">
+              <div class="form-check">
+                <input type="checkbox" id="vat-box" class="form-check-input" />
+                <label class="form-check-label" for="vat-box"
+                  >Include VAT (24%)</label
+                >
+              </div>
+            </div>
+          </span>
         </div>
-      </div>
-    </div>
-    <div class="container text-left" id="range-wrapper">
-      <div class="row align-items-center">
-        <div class="col">
-          <label for="startTime">Select action: </label>
-          <select class="select" id="action-select">
-            <option id="0" value="1">Dishwasher</option>
-            <option id="1" value="4">Oven</option>
-            <option id="2" value="0.5">Fridge</option>
-            <option id="3" value="5">Sauna</option>
-            <option id="4" value="1">Computer</option>
-            <option id="5" value="0.5">Laptop</option>
-          </select>
-          <label for="startTime">Start time: </label>
-          <input
-            type="time"
-            id="startTime"
-            min="1:00"
-            max="23:00"
-            value="00:00"
-            step="900"
-          />
-          <label for="endTime">End time: </label>
-          <input
-            type="time"
-            id="endTime"
-            min="1:00"
-            max="23:00"
-            value="03:00"
-            step="900"
-          />
-          <button id="add-action" class="btn btn-primary" type="submit">Add</button>
+        <div
+          class="container d-flex justify-content-center bg-light"
+          id="range-wrapper"
+        >
+          <span class="p-2 m-2 border border-secondary border-1">
+            <label for="startTime">Select action: </label>
+            <select class="select" id="action-select">
+              <option id="0" value="1">Dishwasher</option>
+              <option id="1" value="4">Oven</option>
+              <option id="2" value="0.5">Fridge</option>
+              <option id="3" value="5">Sauna</option>
+              <option id="4" value="1">Computer</option>
+              <option id="5" value="0.5">Laptop</option>
+            </select>
+            <label for="startTime">Start time: </label>
+            <input
+              type="time"
+              id="startTime"
+              min="1:00"
+              max="23:00"
+              value="00:00"
+              step="900"
+            />
+            <label for="endTime">End time: </label>
+            <input
+              type="time"
+              id="endTime"
+              min="1:00"
+              max="23:00"
+              value="03:00"
+              step="900"
+            />
+            <button id="add-action" class="btn btn-primary" type="submit">
+              Add
+            </button>
+          </span>
         </div>
-      </div>
+      </span>
     </div>
   </body>
-  <footer>
-    <div class="container text-center">
-      <h5>Link to my Github</h5>
-      <a href="https://github.com/mrMikoma">Github</a>
+  <footer class="bg-info text-white">
+    <div class="d-grid m-5 p-2 border-top justify-content-center">
+      <div class="d-grid">
+        <h5>Link to my Github</h5>
+      </div>
+      <div class="d-grid">
+        <a
+          id="github"
+          class="btn text-white btn-secondary"
+          href="https://github.com/mrMikoma"
+          role="button"
+        >
+          Github
+        </a>
+      </div>
     </div>
   </footer>
 </html>

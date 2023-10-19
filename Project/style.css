@@ -1,22 +1,9 @@
-header {
-    padding: 10px;
-    margin: auto,
+* {
+  font-family: "Press Start 2P", "Roboto", sans-serif !important;
 }
 
-body {
-    padding: 100;
-    margin: auto,
-}
-
-footer {
-    padding: 10px;
-    margin: auto,
-}
-
-.alpha { color: purple; }
-
-
-.beta {
-  color: yellow;
-  background-color: indigo;
-}
+@media (min-width: 800px) {
+    #settings {
+        display: inline;
+    }
+  }
