@@ -71,6 +71,10 @@
     <div>
       <div id="chart"></div>
     </div>
+    <div>
+      <ul id="action-list" class="list-group">
+      </ul>
+    </div>
     <div class="row gy-2 gx-3 align-items-center">
       <div
         class="btn-group"
@@ -106,169 +110,43 @@
       </div>
     </div>
     <div class="container text-left" id="range-wrapper">
-      <div class="row row-cols-3 align-items-center">
+      <div class="row align-items-center">
         <div class="col">
-          <label for="0" class="form-label">01:00</label>
+          <label for="startTime">Select action: </label>
+          <select class="select" id="action-select">
+            <option id="0" value="1">Dishwasher</option>
+            <option id="1" value="4">Oven</option>
+            <option id="2" value="0.5">Fridge</option>
+            <option id="3" value="5">Sauna</option>
+            <option id="4" value="1">Computer</option>
+            <option id="5" value="0.5">Laptop</option>
+          </select>
+          <label for="startTime">Start time: </label>
           <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="0"
+            type="time"
+            id="startTime"
+            min="1:00"
+            max="23:00"
+            value="00:00"
+            step="900"
           />
-          <label for="3" class="form-label">04:00</label>
+          <label for="endTime">End time: </label>
           <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="3"
+            type="time"
+            id="endTime"
+            min="1:00"
+            max="23:00"
+            value="03:00"
+            step="900"
           />
-          <label for="6" class="form-label">07:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="6"
-          />
-          <label for="9" class="form-label">10:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="9"
-          />
-          <label for="12" class="form-label">13:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="12"
-          />
-        </div>
-        <div class="col">
-          <label for="1" class="form-label">02:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="1"
-          />
-          <label for="4" class="form-label">05:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="4"
-          />
-          <label for="7" class="form-label">08:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="7"
-          />
-          <label for="10" class="form-label">11:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="10"
-          />
-          <label for="13" class="form-label">14:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="13"
-          />
-        </div>
-        <div class="col">
-          <label for="2" class="form-label">03:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="2"
-          />
-          <label for="5" class="form-label">06:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="5"
-          />
-          <label for="8" class="form-label">09:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="8"
-          />
-          <label for="11" class="form-label">12:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="11"
-          />
-          <label for="14" class="form-label">15:00</label>
-          <input
-            type="range"
-            class="form-range"
-            min="0"
-            max="5"
-            step="0.1"
-            value="0"
-            id="14"
-          />
+          <button id="add-action" class="btn btn-primary" type="submit">Add</button>
         </div>
       </div>
     </div>
   </body>
   <footer>
     <div class="container text-center">
-      <h3>Link to my Github</h3>
+      <h5>Link to my Github</h5>
       <a href="https://github.com/mrMikoma">Github</a>
     </div>
   </footer>
