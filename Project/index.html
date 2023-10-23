@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Spot prices</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="codeIndex.js" defer></script>
+    <script src="./spot/spot.js" type="module" defer></script>
+    <script src="codeIndex.js" type="module" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
@@ -102,17 +103,15 @@
       </span>
     </div>
   </body>
-  <footer class="bg-info text-white">
-    <div
-      class="d-grid m-5 p-2 border-top justify-content-center"
-    >
+  <footer>
+    <div class="d-grid m-5 p-2 border-top border-2 justify-content-center">
       <div class="d-grid">
-        <h5>Link to my Github</h5>
+        <h5 class="text-secondary">Link to my Github</h5>
       </div>
       <div class="d-grid">
         <a
           id="github"
-          class="btn text-white btn-secondary"
+          class="btn btn-secondary"
           href="https://github.com/mrMikoma"
           role="button"
         >

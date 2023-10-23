@@ -5,6 +5,8 @@ Used documentation:
 
 */
 
+import * as spot from "./spot/spot.js";
+
 let chart = "";
 let chartDataToday = "";
 let chartDataDayahead = "";
@@ -48,10 +50,13 @@ const getDataset = (data) => {
   });
   let dataset = [{ name: "Hour price (cents/kWh)", values: values }];
 
-  chartData = {
+  let chartData = {
     labels: labels,
     datasets: dataset,
   };
+
+  // TEST
+  spot.hehe()
 
   return chartData;
 };

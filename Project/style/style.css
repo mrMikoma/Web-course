@@ -2,6 +2,10 @@
   font-family: "Press Start 2P", "Roboto", sans-serif !important;
 }
 
+body {
+  background-color: #EFFFEC;
+}
+
 #chart {
   font-family: sans-serif !important;
 }
