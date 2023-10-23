@@ -7,15 +7,12 @@
 }
 
 .status-on {
-  background-color: #AEEEA0;
+  background-color: #aeeea0;
 }
 
 .status-off {
-  background-color: #F6BEB2;
+  background-color: #f6beb2;
 }
 
 @media (min-width: 800px) {
-    #settings {
-        display: inline;
-    }
-  }
+}

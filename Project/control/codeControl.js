@@ -7,13 +7,19 @@ Used documentation:
 
 // Global variables
 let relayOn = false;
+let updateDateString = "01.01.1970";
+let updateTimeString = "00:01";
 
 // Add relay update button
 const relayUpdateButton = document.getElementById("relay-update");
 relayUpdateButton.addEventListener("click", () => {
   updateRelayPage();
-  getRelayState();
 });
+
+// Update timer info when page loaded
+onload = () => {
+  updateInfoLabel();
+};
 
 // Add relay control button
 const relayToggleButton = document.getElementById("relay-button");
@@ -29,7 +35,6 @@ relayToggleButton.addEventListener("click", () => {
     relayToggleButton.textContent = "Turn off";
   }
   updateRelayPage();
-  getRelayState(); // Debug
 });
 
 // Update relay status on page
@@ -40,7 +45,8 @@ const updateRelayPage = () => {
 
   // Toggle button
   if (relayOn) {
-    statusLabel.className = "p-3 border border-secondary border-1 bg-success";
+    statusLabel.className =
+      "p-3 border border-secondary border-1 text-white bg-success";
     statusLabel.textContent = "Relay is ON";
     statusInfo.className = "border border-secondary border-1 status-on";
   } else {
@@ -51,32 +57,30 @@ const updateRelayPage = () => {
 
   // Update timer
   updateDateTime();
+  updateInfoLabel();
 };
 
-// Get current date and time
+// Update current date and time
 const updateDateTime = () => {
-  // Get needed elements
-  let updateLabel = document.getElementById("update-timer");
-
   // Get time and date
   let today = new Date();
-  let timeString =
+  updateTimeString =
     String(today.getHours()).padStart(2, "0") +
     ":" +
     String(today.getMinutes()).padStart(2, "0");
-  let dateString =
+  updateDateString =
     String(today.getDate()).padStart(2, "0") +
     "." +
     String(today.getMonth() + 1).padStart(2, "0") +
     "." +
     today.getFullYear();
-
-  // Update status
-  console.log("currently: " + dateString + " " + timeString); // Debug
-  updateLabel.textContent = dateString + " " + timeString;
 };
 
-// Get relay state from the device
-const getRelayState = () => {
-  console.log("hello, relay is: " + relayOn); // Debug
+// Update info label with date and time
+const updateInfoLabel = () => {
+  // Get needed elements
+  let updateLabel = document.getElementById("update-timer");
+
+  // Update status
+  updateLabel.textContent = updateDateString + " " + updateTimeString;
 };

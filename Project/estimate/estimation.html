@@ -26,8 +26,8 @@
     ></script>
   </head>
   <header>
-    <div class="card">
-      <h3 class="card-header">Spot electricity prices</h3>
+    <div class="card m-2">
+      <h3 class="card-header">Spot control</h3>
     </div>
     <div class="card-body">
       <nav class="navbar navbar-expand-lg bg-light collapese navbar-collapse">
@@ -68,7 +68,7 @@
   </header>
   <body>
     <div class="row">
-      <div class="col">
+      <div class="col d-flex justify-content-center">
         <label>Price estimate for your electricity consumption: </label>
         <label id="consumption-price" class="fw-bold">0€</label>
       </div>
@@ -80,8 +80,8 @@
       <ul id="action-list" class="list-group"></ul>
     </div>
     <div class="d-flex justify-content-center" id="settings">
-      <span class="border border-secondary border-1">
-        <div class="d-flex justify-content-center bg-light">
+      <span class="border border-secondary border-1" id="span-settings">
+        <div class="d-flex justify-content-center bg-light linjaan">
           <span class="p-2 m-2 border border-secondary border-1">
             <div class="btn-group" role="group">
               <input
@@ -121,36 +121,44 @@
           id="range-wrapper"
         >
           <span class="p-2 m-2 border border-secondary border-1">
-            <label for="startTime">Select action: </label>
-            <select class="select" id="action-select">
-              <option id="0" value="1">Dishwasher</option>
-              <option id="1" value="4">Oven</option>
-              <option id="2" value="0.5">Fridge</option>
-              <option id="3" value="5">Sauna</option>
-              <option id="4" value="1">Computer</option>
-              <option id="5" value="0.5">Laptop</option>
-            </select>
-            <label for="startTime">Start time: </label>
-            <input
-              type="time"
-              id="startTime"
-              min="1:00"
-              max="23:00"
-              value="00:00"
-              step="900"
-            />
-            <label for="endTime">End time: </label>
-            <input
-              type="time"
-              id="endTime"
-              min="1:00"
-              max="23:00"
-              value="03:00"
-              step="900"
-            />
-            <button id="add-action" class="btn btn-primary" type="submit">
-              Add
-            </button>
+            <div>
+              <label for="action-select">Select action: </label>
+              <select class="select" id="action-select">
+                <option id="0" value="1">Dishwasher</option>
+                <option id="1" value="4">Oven</option>
+                <option id="2" value="0.5">Fridge</option>
+                <option id="3" value="5">Sauna</option>
+                <option id="4" value="1">Computer</option>
+                <option id="5" value="0.5">Laptop</option>
+              </select>
+            </div>
+            <div>
+              <label for="startTime">Start time: </label>
+              <input
+                type="time"
+                id="startTime"
+                min="1:00"
+                max="23:00"
+                value="00:00"
+                step="900"
+              />
+            </div>
+            <div>
+              <label for="endTime">End time: </label>
+              <input
+                type="time"
+                id="endTime"
+                min="1:00"
+                max="23:00"
+                value="03:00"
+                step="900"
+              />
+            </div>
+            <div>
+              <button id="add-action" class="btn btn-primary" type="submit">
+                Add
+              </button>
+            </div>
           </span>
         </div>
       </span>
