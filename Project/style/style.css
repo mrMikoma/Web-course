@@ -2,6 +2,18 @@
   font-family: "Press Start 2P", "Roboto", sans-serif !important;
 }
 
+#chart {
+  font-family: sans-serif !important;
+}
+
+.status-on {
+  background-color: #AEEEA0;
+}
+
+.status-off {
+  background-color: #F6BEB2;
+}
+
 @media (min-width: 800px) {
     #settings {
         display: inline;
