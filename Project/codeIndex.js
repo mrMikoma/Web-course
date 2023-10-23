@@ -8,8 +8,6 @@ Used documentation:
 import * as spot from "./spot/spot.js";
 
 let chart = "";
-let chartDataToday = "";
-let chartDataDayahead = "";
 
 // Add dayselector 1
 const daySelector1 = document.getElementById("btnradio1");
@@ -25,60 +23,22 @@ daySelector2.addEventListener("click", (event) => {
 
 // Add checkbox
 const includeVATbox = document.getElementById("vat-box");
-includeVATbox.addEventListener("click", (event) => {
+includeVATbox.addEventListener("change", (event) => {
   updateChart();
 });
 
-const getData = async (source) => {
-  const res = await fetch(source);
-  const data = await res.json();
-  return data;
-};
-
-const getDataset = (data) => {
-  let labels = [];
-  let values = [];
-  data.prices.forEach((price, index) => {
-    // Parse time
-    let isoDate = new Date(price.time);
-    let time =
-      isoDate.getHours().toString() + ":" + isoDate.getMinutes().toString() + 0;
-    labels.push(time);
-
-    // Fix price
-    values.push((Number(price.price) / 10).toFixed(2));
-  });
-  let dataset = [{ name: "Hour price (cents/kWh)", values: values }];
-
-  let chartData = {
-    labels: labels,
-    datasets: dataset,
-  };
-
-  // TEST
-  spot.hehe()
-
-  return chartData;
-};
-
+// Build chart
 const buildChart = async () => {
-  // Get data
-  const sourceToday = "day-prices.json";
-  const sourceDayahead = "day-prices-dayahead.json";
-  const dataToday = await getData(sourceToday);
-  const dataDayahead = await getData(sourceDayahead);
-
-  // Parse datasets
-  chartDataToday = getDataset(dataToday);
-  chartDataDayahead = getDataset(dataDayahead);
+  // Initialize datasets
+  await spot.initializeDatasets();
 
   // Configure chart
   chart = new frappe.Chart("#chart", {
-    data: chartDataToday,
+    data: spot.getChartDataset(true, false, false),
     title: "Electricity prices",
     type: "line",
     height: 450,
-    colors: ['red'],
+    colors: ["red"],
     axisOptions: {
       xIsSeries: true,
       xAxisMode: "tick",
@@ -93,27 +53,20 @@ const buildChart = async () => {
 };
 
 const updateChart = () => {
-  // Select data day
-  let tempChartData = structuredClone(chartDataToday);
+  // Select correct day
+  let isToday = true;
   if (daySelector2.checked) {
-    tempChartData = structuredClone(chartDataDayahead);
+    isToday = false;
   }
 
   // Select VAT
-  let indexVAT = 1;
+  let includeVAT = false;
   if (includeVATbox.checked) {
-    indexVAT = 1.24;
+    includeVAT = true;
   }
 
-  // Calculate new values
-  let values = tempChartData.datasets[0].values;
-  values.forEach((value, index) => {
-    values[index] = (Number(value) * indexVAT).toFixed(2);
-  });
-  tempChartData.datasets[0].values = values;
-
   // Update chart
-  chart.update(tempChartData);
+  chart.update(spot.getChartDataset(isToday, false, includeVAT));
 };
 
 buildChart();
