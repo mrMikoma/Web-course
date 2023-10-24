@@ -37,19 +37,28 @@ export const getChartDataset = (isToday, includeConsumption, includeVAT) => {
   // Add consumption data
   if (includeConsumption) {
     chartData.datasets.push({
-      name: "Consumption (kWh)",
-      values: currentConsumption,
+      name: "Price (cents)",
+      values: structuredClone(currentConsumption),
       chartType: "bar",
     });
   }
 
-  // Add VAT to data    ADD CONSUMPTION!!!
+  // Add VAT to data
   if (includeVAT) {
-    let values = chartData.datasets[0].values;
-    values.forEach((value, index) => {
-      values[index] = (Number(value) * 1.24).toFixed(2);
+    chartData.datasets[0].values.forEach((value, index) => {
+      chartData.datasets[0].values[index] = (Number(value) + 2.24).toFixed(2);
     });
-    chartData.datasets[0].values = values;
+    if (includeConsumption) {
+      chartData.datasets[1].values.forEach((value, index) => {
+        if (value != 0) {
+          let hourConsumption = chartData.datasets[1].values[index] / chartData.datasets[0].values[index];
+          chartData.datasets[1].values[index] = (
+            Number(value) +
+            hourConsumption * 2.24
+          ).toFixed(2);
+        }
+      });
+    }
   }
 
   // Add axis limits
@@ -65,6 +74,7 @@ export const getChartDataset = (isToday, includeConsumption, includeVAT) => {
   return chartData;
 };
 
+// Add new estimate for consumption
 export const addEstimateAction = (
   arrayIndex,
   actionValue,
@@ -94,15 +104,18 @@ export const addEstimateAction = (
   }
   let hourlyPrices = chartData.datasets[0].values;
 
-  /*
-  // Calculate start minutes   (NOT IMPLEMENTED YET)
+  // Calculate start minutes
   if (startTimeDate.getMinutes() != 0) {
-    startTimeDate.setHours(startTimeDate.getUTCHours() + 1);
-    console.log("start minutes " + (60 - startTimeDate.getMinutes())); // DEbug
+    // Calculate estimate for minutes
+    newConsumptionPrices[startTimeDate.getHours() - 3] =
+      hourlyPrices[startTimeDate.getHours() - 3] *
+      ((60 - startTimeDate.getMinutes()) / 60) *
+      actionValue;
+
+    // Iterate time
+    startTimeDate.setHours(startTimeDate.getHours() + 1);
     startTimeDate.setMinutes(0);
-    console.log("updated " + startTimeDate.toTimeString()); // DEbug
   }
-  */
 
   // Calculate full hours
   while (i <= 30) {
@@ -111,31 +124,24 @@ export const addEstimateAction = (
       break;
     }
 
-    // Calculate hour cost    FIX
-    console.log("Alkava tunti: " + (startTimeDate.getHours() - 2));
-    newConsumptionPrices[startTimeDate.getHours() - 3] = hourlyPrices[startTimeDate.getHours() - 3] * actionValue;
+    // Calculate hour cost
+    newConsumptionPrices[startTimeDate.getHours() - 3] =
+      hourlyPrices[startTimeDate.getHours() - 3] * actionValue;
 
-    // Iterate
+    // Iterate time
     startTimeDate.setHours(startTimeDate.getHours() + 1);
-    console.log(
-      "added one! " +
-        startTimeDate.toTimeString() +
-        " to " +
-        startTimeDate.getUTCHours() +
-        " index:" +
-        i
-    ); // DEbug
-
     ++i;
-    console.log(i); // Debug
   }
 
-  /*
-  // Calculate end minutes   (NOT IMPLEMENTED YET)
+  // Calculate end minutes
   if (endTimeDate.getMinutes() != 0) {
     console.log("last minutes " + endTimeDate.getMinutes()); // DEbug
+    // Calculate estimate for minutes
+    newConsumptionPrices[startTimeDate.getHours() - 3] =
+      hourlyPrices[startTimeDate.getHours() - 3] *
+      (endTimeDate.getMinutes() / 60) *
+      actionValue;
   }
-  */
 
   // Store values for later use
   currentActions[arrayIndex] = {
@@ -151,7 +157,6 @@ export const addEstimateAction = (
 
   // Update global variables
   currentConsumption = oldConsumption;
-  console.log(currentConsumption); // Debug
 };
 
 export const removeEstimateAction = (listID) => {
@@ -171,10 +176,14 @@ export const removeEstimateAction = (listID) => {
   delete currentActions[listID];
 };
 
-export const getTotalConsumptionPrice = (isToday, includeVAT) => {
+export const calculateTotalConsumptionPrice = (isToday, includeVAT) => {
+  // Get correct dataset
+  let chartData = structuredClone(getChartDataset(isToday, true, includeVAT));
+  let consumption = chartData.datasets[1].values;
+
   // Calculate total price
   let totalPrice = 0;
-  currentConsumption.forEach((value, index) => {
+  consumption.forEach((value, index) => {
     totalPrice += Number(value);
   });
   return (totalPrice / 100).toFixed(2);

@@ -89,11 +89,10 @@ const updateAll = () => {
   }
 
   // Update consumption total price
-  updateTotalPrice(spot.getTotalConsumptionPrice(isToday, includeVAT));
+  updateTotalPrice(spot.calculateTotalConsumptionPrice(isToday, includeVAT));
 
   // Update chart
   let dataasd = spot.getChartDataset(isToday, true, includeVAT);
-  console.log(dataasd); // Debug
   chart.update(dataasd);
 };
 
@@ -156,8 +155,6 @@ const addListItem = (action, startTime, endTime) => {
 
 // Remove action from list
 const removeConsumptionAction = (event) => {
-  console.log("hahahahaaaaaaa " + event.target.id); // Debug
-
   // Update spot
   spot.removeEstimateAction(event.target.id);
 
