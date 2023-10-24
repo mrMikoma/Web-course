@@ -5,116 +5,59 @@ Used documentation:
 
 */
 
+import * as spot from "../spot/spot.js";
+
 // Global variables
 let chart = "";
-let chartDataToday = "";
-let chartDataDayahead = "";
-let savedActions = [];
 let runningListID = 0;
 
 // Add dayselector 1
 const daySelector1 = document.getElementById("btnradio1");
 daySelector1.addEventListener("click", (event) => {
-  updateChart();
+  updateAll();
 });
 
 // Add dayselector 1
 const daySelector2 = document.getElementById("btnradio2");
 daySelector2.addEventListener("click", (event) => {
-  updateChart();
+  updateAll();
 });
 
 // Add checkbox
 const includeVATbox = document.getElementById("vat-box");
 includeVATbox.addEventListener("click", (event) => {
-  updateChart();
+  updateAll();
 });
 
 // Add new action
 const addActionButton = document.getElementById("add-action");
 addActionButton.addEventListener("click", (event) => {
-  updateConsumptionChart();
+  addNewConsumption();
+  updateAll();
 });
 
 // Add wrapper for removing action from list
-const wrapperActions = document.getElementById("action-select");
+const wrapperActions = document.getElementById("action-list");
 wrapperActions.addEventListener("click", (event) => {
+  console.log("removed div with " + event.target.id); // Debug
   // Error handling
   const isButton = event.target.nodeName === "BUTTON";
   if (!isButton) {
     return;
   }
   // Remove list item
-  removeListItem(event);
-
-  console.log("removed div with " + event.target.id); // Debug
+  removeConsumptionAction(event);
 });
 
-// Get data
-const getData = async (source) => {
-  const res = await fetch(source);
-  const data = await res.json();
-  return data;
-};
-
-// Handle dataset
-const getDataset = (data) => {
-  let labels = [];
-  let values = [];
-  data.prices.forEach((price, index) => {
-    // Parse time
-    let isoDate = new Date(price.time);
-    let time =
-      isoDate.getHours().toString() + ":" + isoDate.getMinutes().toString() + 0;
-    labels.push(time);
-
-    // Fix price
-    values.push((Number(price.price) / 10).toFixed(2));
-  });
-  let dataset = [
-    { name: "Hour price (cents/kWh)", values: values, chartType: "line" },
-  ];
-
-  chartData = {
-    labels: labels,
-    datasets: dataset,
-  };
-
-  return chartData;
-};
-
 const buildChart = async () => {
-  // Get data
-  const sourceToday = "../day-prices.json";
-  const sourceDayahead = "../day-prices-dayahead.json";
-  const dataToday = await getData(sourceToday);
-  const dataDayahead = await getData(sourceDayahead);
-
-  // Parse datasets
-  chartDataToday = getDataset(dataToday);
-  chartDataDayahead = getDataset(dataDayahead);
-
-  // Add estimate to datasets
-  let consumption = [];
-  for (let i = 0; i < 24; i++) {
-    consumption.push("0");
-  }
-  chartDataToday.datasets.push({
-    name: "Consumption (kW/h)",
-    values: consumption,
-    chartType: "bar",
-  });
-  chartDataDayahead.datasets.push({
-    name: "Consumption (kW/h)",
-    values: consumption,
-    chartType: "bar",
-  });
-
-  console.log(chartDataToday); // Debug
+  // Initialize datasets
+  const sourceToday = "../spot/day-prices.json";
+  const sourceDayahead = "../spot/day-prices-dayahead.json";
+  await spot.initializeDatasets(sourceToday, sourceDayahead);
 
   // Configure chart
   chart = new frappe.Chart("#chart", {
-    data: chartDataToday,
+    data: spot.getChartDataset(true, true, false),
     title: "Electricity prices",
     type: "line",
     height: 450,
@@ -129,40 +72,43 @@ const buildChart = async () => {
       heatline: 1,
       regionFill: 1,
     },
-    barOptions: {},
   });
 };
 
-const updateChart = () => {
-  // ELECTRICITY PRICES
-  // Select data day
-  let tempChartData = structuredClone(chartDataToday);
+const updateAll = () => {
+  // Select correct day
+  let isToday = true;
   if (daySelector2.checked) {
-    tempChartData = structuredClone(chartDataDayahead);
+    isToday = false;
   }
 
   // Select VAT
-  let indexVAT = 1;
+  let includeVAT = false;
   if (includeVATbox.checked) {
-    indexVAT = 1.24;
+    includeVAT = true;
   }
 
-  // Calculate new values
-  let values = tempChartData.datasets[0].values;
-  values.forEach((value, index) => {
-    values[index] = (Number(value) * indexVAT).toFixed(2);
-  });
-  tempChartData.datasets[0].values = values;
+  // Update consumption total price
+  updateTotalPrice(spot.getTotalConsumptionPrice(isToday, includeVAT));
 
   // Update chart
-  updateConsumptionChart();
+  let dataasd = spot.getChartDataset(isToday, true, includeVAT);
+  console.log(dataasd); // Debug
+  chart.update(dataasd);
 };
 
-const updateConsumptionChart = () => {
-  // Select data day
-  let tempChartData = chartDataToday;
+const updateTotalPrice = (totalPrice) => {
+  // Update consumption price
+  let consumptionLable = document.getElementById("consumption-price");
+  consumptionLable.innerText = totalPrice + "€";
+};
+
+// Add consumption
+const addNewConsumption = () => {
+  // Select correct day
+  let isToday = true;
   if (daySelector2.checked) {
-    tempChartData = chartDataDayahead;
+    isToday = false;
   }
 
   // Get action data
@@ -170,23 +116,18 @@ const updateConsumptionChart = () => {
   let startTime = document.getElementById("startTime").value;
   let endTime = document.getElementById("endTime").value;
 
-  // Parse time
-  let startTimeDate = new Date("2019-01-01T" + startTime + ":00.000+00:00");
-  let endTimeDate = new Date("2019-01-01T" + endTime + ":00.000+00:00");
-  if (startTimeDate >= endTimeDate) {
-    console.log("Not possible!");
-    return;
-  }
+  // Add new action to spot
+  spot.addEstimateAction(runningListID, action.value, startTime, endTime);
 
-  // Calculate new values
-  calculateConsumptionPrices(
-    tempChartData,
-    action[action[action.selectedIndex].id].value,
-    startTimeDate,
-    endTimeDate,
-    true
-  );
+  // Add new action to list
+  addListItem(action, startTime, endTime, isToday);
 
+  // Update UI
+  updateAll();
+};
+
+// Add new action to list
+const addListItem = (action, startTime, endTime) => {
   // Create new list element
   let div = document.createElement("div");
   let node = document.createElement("li");
@@ -211,148 +152,21 @@ const updateConsumptionChart = () => {
   div.append(node);
   div.append(button);
   document.getElementById("action-list").appendChild(div);
-
-  // Update chart
-  chart.update(tempChartData);
-
-  // Update total consumption price
-  updateTotalPrice();
 };
 
-const updateTotalPrice = () => {
-  // Select data day
-  let tempChartData = chartDataToday;
-  if (daySelector2.checked) {
-    tempChartData = chartDataDayahead;
-  }
-
-  // Calculate electricity consumption total price
-  let totalPrice = 0;
-  let prices = tempChartData.datasets[0].values;
-  let consumptions = tempChartData.datasets[1].values;
-  prices.forEach((value, index) => {
-    totalPrice += Number(((value * consumptions[index]) / 100).toFixed(2));
-  });
-
-  // Update consumption price
-  let consumptionLable = document.getElementById("consumption-price");
-  consumptionLable.innerText = totalPrice + "€";
-  return;
-};
-
-const calculateConsumptionPrices = (
-  tempChartData,
-  action,
-  startTimeDate,
-  endTimeDate,
-  isAdded
-) => {
-  // Declare needed variables
-  let i = 0;
-  let newConsumptionPrices = [];
-  for (let i = 0; i < 24; i++) {
-    newConsumptionPrices.push("0");
-  }
-
-  // Calculate start minutes (NOT IMPLEMENTED YET)
-  /*
-  if (startTimeDate.getMinutes() != 0) {
-    startTimeDate.setHours(startTimeDate.getUTCHours() + 1);
-    console.log("start minutes " + (60 - startTimeDate.getMinutes())); // DEbug
-    startTimeDate.setMinutes(0);
-    console.log("updated " + startTimeDate.toTimeString()); // DEbug
-  }
-  */
-
-  while (i <= 30) {
-    // End if no full hours left
-    if (startTimeDate >= endTimeDate) {
-      break;
-    }
-
-    // Calculate hour cost
-    console.log("Alkava tunti: " + (startTimeDate.getHours() - 2));
-    newConsumptionPrices[startTimeDate.getHours() - 3] = 5; // FIX!!!!
-
-    // Iterate
-    startTimeDate.setHours(startTimeDate.getHours() + 1);
-    console.log(
-      "added one! " +
-        startTimeDate.toTimeString() +
-        " to " +
-        startTimeDate.getUTCHours() +
-        " index:" +
-        i
-    ); // DEbug
-
-    ++i;
-    console.log(i); // Debug
-  }
-
-  // Calculate end minutes  (NOT IMPLEMENTED YET)
-  /*
-  if (endTimeDate.getMinutes() != 0) {
-    console.log("last minutes " + endTimeDate.getMinutes()); // DEbug
-  }
-  */
-
-  // Store values for later use
-  let actionValue = action;
-  if (isAdded) {
-    savedActions.push({
-      actionValue: actionValue.toString(),
-      startTime: startTimeDate.toString(),
-      endTime: endTimeDate,
-    });
-  }
-
-  console.log(savedActions); // Debug
-
-  // Calculate new consumption values to existing values
-  let oldConsumption = tempChartData.datasets[1].values;
-  if (isAdded) {
-    oldConsumption.forEach((value, index) => {
-      oldConsumption[index] =
-        Number(oldConsumption[index]) + Number(newConsumptionPrices[index]);
-    });
-  } else {
-    oldConsumption.forEach((value, index) => {
-      oldConsumption[index] =
-        Number(oldConsumption[index]) - Number(newConsumptionPrices[index]);
-    });
-  }
-  // Update both datasets
-  chartDataToday.datasets[1].values = oldConsumption;
-  chartDataDayahead.datasets[1].values = oldConsumption;
-  console.log(tempChartData.datasets[1].values); // Debug
-};
-
-const removeListItem = (event) => {
+// Remove action from list
+const removeConsumptionAction = (event) => {
   console.log("hahahahaaaaaaa " + event.target.id); // Debug
-  // Select data day
-  let tempChartData = chartDataToday;
-  if (daySelector2.checked) {
-    tempChartData = chartDataDayahead;
-  }
 
-  // Recalculate total consumption price
-  console.log(
-    savedActions[event.target.id].actionValue +
-      " " +
-      savedActions[event.target.id].startTime +
-      "--" +
-      savedActions[event.target.id].endTime
-  ); // Debug
-  calculateConsumptionPrices(
-    savedActions[event.target.id].actionValue,
-    new Date(savedActions[event.target.id].startTim),
-    new Date(savedActions[event.target.id].endTime),
-    false
-  );
+  // Update spot
+  spot.removeEstimateAction(event.target.id);
 
   // Remove list item
   let list = document.getElementById("action-list");
   list.removeChild(document.getElementById(event.target.id));
+
+  // Update UI
+  updateAll();
 };
 
 buildChart();

@@ -3,7 +3,7 @@
 }
 
 body {
-  background-color: #EFFFEC;
+  background-color: #efffec;
 }
 
 #chart {
@@ -18,5 +18,6 @@ body {
   background-color: #f6beb2;
 }
 
-@media (min-width: 800px) {
+@media screen and (max-width:screen-xs-max){
+  .main-body{padding:0px;}
 }

@@ -30,7 +30,9 @@ includeVATbox.addEventListener("change", (event) => {
 // Build chart
 const buildChart = async () => {
   // Initialize datasets
-  await spot.initializeDatasets();
+  const sourceToday = "./spot/day-prices.json";
+  const sourceDayahead = "./spot/day-prices-dayahead.json";
+  await spot.initializeDatasets(sourceToday, sourceDayahead);
 
   // Configure chart
   chart = new frappe.Chart("#chart", {
