@@ -152,7 +152,7 @@ export const addEstimateAction = (
   let oldConsumption = currentConsumption;
   oldConsumption.forEach((value, index) => {
     oldConsumption[index] =
-      Number(oldConsumption[index]) + Number(newConsumptionPrices[index]);
+      (Number(oldConsumption[index]) + Number(newConsumptionPrices[index])).toFixed(2);
   });
 
   // Update global variables

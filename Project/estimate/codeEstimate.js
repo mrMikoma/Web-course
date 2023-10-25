@@ -39,7 +39,6 @@ addActionButton.addEventListener("click", (event) => {
 // Add wrapper for removing action from list
 const wrapperActions = document.getElementById("action-list");
 wrapperActions.addEventListener("click", (event) => {
-  console.log("removed div with " + event.target.id); // Debug
   // Error handling
   const isButton = event.target.nodeName === "BUTTON";
   if (!isButton) {
